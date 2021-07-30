@@ -1,7 +1,7 @@
 (defproject hs "0.1.0-SNAPSHOT"
 
   :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+  :url "https://github.com/xandeer/hs"
 
   :dependencies [[ch.qos.logback/logback-classic "1.2.3"]
                  [clojure.java-time "0.3.2"]

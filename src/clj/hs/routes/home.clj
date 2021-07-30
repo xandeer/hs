@@ -12,10 +12,13 @@
 (defn about-page [request]
   (layout/render request "about.html"))
 
+(defn hello-page [request]
+  (layout/render request "hello.html" {:hello "# Hello"}))
+
 (defn home-routes []
-  [ "" 
+  [""
    {:middleware [middleware/wrap-csrf
                  middleware/wrap-formats]}
    ["/" {:get home-page}]
+   ["/hello" {:get hello-page}]
    ["/about" {:get about-page}]])
-
