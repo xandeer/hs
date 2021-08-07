@@ -18,14 +18,16 @@
                   :where (str "Uncaught exception on" (.getName thread))}))))
 
 (def cli-options
-  [["-p" "--port PORT" "Port number"
+  [["-d" "--dir DIRECTORY" "Directory"
+    :parse-fn #(str %)]
+   ["-p" "--port PORT" "Port number"
     :parse-fn #(Integer/parseInt %)]])
 
 (mount/defstate ^{:on-reload :noop} http-server
   :start
   (http/start
     (-> env
-        (update :io-threads #(or % (* 2 (.availableProcessors (Runtime/getRuntime))))) 
+        (update :io-threads #(or % (* 2 (.availableProcessors (Runtime/getRuntime)))))
         (assoc  :handler (handler/app))
         (update :port #(or (-> env :options :port) %))
         (select-keys [:handler :host :port])))

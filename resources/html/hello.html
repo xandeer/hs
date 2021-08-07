@@ -2,5 +2,13 @@
 {% block content %}
 <div class="content">
   {{hello|markdown}}
+
+  {{query}}
+
+  <ul>
+    {% for item in items %}
+    <li><a href="{{item.href}}">{{item.name}}</a></li>
+    {% endfor %}
+  </ul>
 </div>
 {% endblock %}
