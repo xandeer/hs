@@ -18,8 +18,8 @@
 (defn expand-file [s]
   "Replace the first `~` to `(System/getProperty \"user.home\")`"
   (cond
+    (cstr/blank? s) "./"
     (.startsWith s "~") (cstr/replace-first s "~" (System/getProperty "user.home"))
-    (.isEmpty s) "./"
     :else s))
 
 (def hello-prefix "/hello")
