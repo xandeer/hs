@@ -48,8 +48,7 @@
         items (ls (str dir))]
     (layout/render
      request "hello.html"
-     {:hello (str "# " (root))
-      :items (if (or (cstr/blank? dir) (.equals (root) dir))
+     {:items (if (or (cstr/blank? dir) (.equals (root) dir))
                items
                (into [{:href (str hello-prefix
                                   (let [parent (subs dir 0 (cstr/last-index-of dir "/"))]

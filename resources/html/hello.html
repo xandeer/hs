@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="content">
-  {{hello|markdown}}
-
   {{query}}
+
+  <button>Upload</button>
 
   <ul>
     {% for item in items %}
