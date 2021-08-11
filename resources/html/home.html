@@ -1,6 +1,34 @@
 {% extends "base.html" %}
 {% block content %}
-  <div class="content">
-  {{docs|markdown}}
-  </div>
+<div class="content">
+  {{query}}
+
+  <input type="file" id="upload">Upload</input>
+
+  <ul>
+    {% for item in items %}
+    <li><a href="{{item.href}}">{{item.name}}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+
+<script>
+ const $upload = document.querySelector('#upload')
+ $upload.addEventListener('change', _ => {
+   upload($upload.files[0])
+ })
+
+ function upload(file) {
+   const formData  = new FormData()
+   formData.append('file', file)
+
+   fetch(`/static/{{query}}/${file.name}`, {
+     method: 'POST',
+     body: formData
+   }).then(_ => {
+     location=location
+   }).catch(error => console.log(error))
+ }
+
+</script>
 {% endblock %}
