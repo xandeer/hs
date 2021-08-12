@@ -34,7 +34,9 @@
 (defn ls [folder]
   (let [path (expand-with-root folder)
         file (io/as-file path)
-        children (sort-by #(.isFile %) (.listFiles file))]
+        children (sort-by #(.isFile %)
+                          (remove #(= (.getName %) ".DS_Store")
+                                  (.listFiles file)))]
     (mapv (fn [f]
             {:href (str (if (.isDirectory f) "?dir=" static)
                         folder "/" (.getName f))
@@ -42,7 +44,6 @@
           children)))
 
 (defn home-page [request]
-  (log/info "req: " request)
   (let [dir (:dir (:params request))
         items (ls dir)]
     (layout/render
@@ -59,7 +60,6 @@
 (defn save-file [req]
   (let [tmp (:tempfile (:file (:params req)))
         path (expand-with-root (cstr/replace-first (:uri req) static ""))]
-    (log/info "tmp:" tmp "cus:" path)
     (do
       (io/copy tmp (io/file path))
       {:status 200, :body "ok"})))
