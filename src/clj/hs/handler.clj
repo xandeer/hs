@@ -1,35 +1,37 @@
 (ns hs.handler
   (:require
     [hs.middleware :as middleware]
-    [hs.layout :refer [error-page]]
-    [hs.routes.home :refer [home-routes]]
-    [reitit.ring :as ring]
-    [ring.middleware.content-type :refer [wrap-content-type]]
-    [ring.middleware.webjars :refer [wrap-webjars]]
     [hs.env :refer [defaults]]
-    [mount.core :as mount]))
+    [hs.utils :as utils]
+    [compojure.core :refer :all]
+    [compojure.route :refer [files]]
+    [clojure.tools.logging :as log]
+    [ring.middleware.defaults :refer :all]
+    [mount.core :as mount]
+    [hiccup.core :as hiccup]))
 
-(mount/defstate init-app
-  :start ((or (:init defaults) (fn [])))
-  :stop  ((or (:stop defaults) (fn []))))
+(defn ll [path]
+  (hiccup/html
+   [:html
+    [:body
+     [:h1 {:class "title"}
+      (str "Dir: " path)]
+     [:ul
+      (for  [i (utils/ls path)]
+        [:li
+         [:a {:href (:href i)}
+          (:name i)]])]
+     ]]))
 
 (mount/defstate app-routes
   :start
-  (ring/ring-handler
-    (ring/router
-      [(home-routes)])
-    (ring/routes
-      (ring/create-resource-handler
-        {:path "/"})
-      (wrap-content-type
-        (wrap-webjars (constantly nil)))
-      (ring/create-default-handler
-        {:not-found
-         (constantly (error-page {:status 404, :title "404 - Page not found"}))
-         :method-not-allowed
-         (constantly (error-page {:status 405, :title "405 - Not allowed"}))
-         :not-acceptable
-         (constantly (error-page {:status 406, :title "406 - Not acceptable"}))}))))
+  (routes
+   (files "/file/" {:root (utils/expand-root)})
+   (GET "/folder/:path" [path]
+        (log/info "Path : " path)
+        (ll (str "/" path)))
+   (GET "/" [] (ll ""))))
 
 (defn app []
-  (middleware/wrap-base #'app-routes))
+  (log/info "Root:" (utils/expand-root))
+  (wrap-defaults #'app-routes site-defaults))

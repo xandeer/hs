@@ -2,10 +2,10 @@
   (:require
     [hs.handler :as handler]
     [hs.nrepl :as nrepl]
-    [luminus.http-server :as http]
     [hs.config :refer [env]]
     [clojure.tools.cli :refer [parse-opts]]
     [clojure.tools.logging :as log]
+    [org.httpkit.server :refer [run-server]]
     [mount.core :as mount])
   (:gen-class))
 
@@ -25,14 +25,18 @@
 
 (mount/defstate ^{:on-reload :noop} http-server
   :start
-  (http/start
-    (-> env
-        (update :io-threads #(or % (* 2 (.availableProcessors (Runtime/getRuntime)))))
-        (assoc  :handler (handler/app))
-        (update :port #(or (-> env :options :port) %))
-        (select-keys [:handler :host :port])))
+  (do
+    (log/info "Starting on:"
+              (-> env
+                  (update :port #(or (-> env :options :port) %))
+                  (:port)))
+    (run-server (handler/app)
+                (-> env
+                    (update :port #(or (-> env :options :port) %))
+                    (update :thread #(or 3 %))
+                    (select-keys [:thread :port]))))
   :stop
-  (http/stop http-server))
+  (http-server :timeout 100))
 
 (mount/defstate ^{:on-reload :noop} repl-server
   :start
@@ -42,7 +46,6 @@
   :stop
   (when repl-server
     (nrepl/stop repl-server)))
-
 
 (defn stop-app []
   (doseq [component (:stopped (mount/stop))]
