@@ -36,8 +36,8 @@
                       (mapv
                        (fn [f]
                          {:href (str
-                                 (if (.isFile f) "/file/"
-                                     "/folder/")
+                                 (if (.isFile f) "/file"
+                                     "/folder")
                                  folder
                                  (when-not (root? folder) "/")
                                  (.getName f))
@@ -46,12 +46,10 @@
       children
       (into [{:href (let [parent (subs folder 0 (cstr/last-index-of folder "/"))]
                       (if (cstr/blank? parent) home
-                          parent))
+                          (str "/folder" parent)))
               :name "../"}] children))))
 
-(defn save-file [req]
-  (let [tmp (:tempfile (:file (:params req)))
-        path (expand-with-root (cstr/replace-first (:uri req) static ""))]
-    (do
-      (io/copy tmp (io/file path))
-      {:status 200, :body "ok"})))
+(defn save-file [tmp path]
+  (do
+    (io/copy (io/file tmp) (io/file (expand-with-root path)))
+    {:status 200, :body "ok"}))

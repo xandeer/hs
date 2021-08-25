@@ -15,11 +15,7 @@
                  [org.clojure/clojure "1.10.3"]
                  [org.clojure/tools.cli "1.0.206"]
                  [org.clojure/tools.logging "1.1.0"]
-                 ;; [org.webjars/webjars-locator "0.41"]
-                 ;; [org.webjars/webjars-locator-jboss-vfs "0.1.0"]
-                 ;; [ring-webjars "0.2.0"]
-                 [ring/ring-core "1.9.3"]
-                 [ring/ring-defaults "0.3.3"]]
+                 [ring "1.9.4"]]
 
   :min-lein-version "2.0.0"
 
