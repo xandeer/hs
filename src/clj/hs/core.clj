@@ -1,7 +1,6 @@
 (ns hs.core
   (:require
     [hs.handler :as handler]
-    [hs.nrepl :as nrepl]
     [hs.config :refer [env]]
     [hs.utils :refer [get-host-address]]
     [clojure.tools.cli :refer [parse-opts]]
@@ -39,15 +38,6 @@
                     (select-keys [:thread :port]))))
   :stop
   (http-server :timeout 100))
-
-(mount/defstate ^{:on-reload :noop} repl-server
-  :start
-  (when (env :nrepl-port)
-    (nrepl/start {:bind (env :nrepl-bind)
-                  :port (env :nrepl-port)}))
-  :stop
-  (when repl-server
-    (nrepl/stop repl-server)))
 
 (defn stop-app []
   (doseq [component (:stopped (mount/stop))]

@@ -16,17 +16,15 @@
   "Starts application.
   You'll usually want to run this on startup."
   []
-  (mount/start-without #'hs.core/repl-server))
+  (mount/start))
 
 (defn stop
   "Stops application."
   []
-  (mount/stop-except #'hs.core/repl-server))
+  (mount/stop))
 
 (defn restart
   "Restarts application."
   []
   (stop)
   (start))
-
-
