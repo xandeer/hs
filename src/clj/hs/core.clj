@@ -3,6 +3,7 @@
     [hs.handler :as handler]
     [hs.nrepl :as nrepl]
     [hs.config :refer [env]]
+    [hs.utils :refer [get-host-address]]
     [clojure.tools.cli :refer [parse-opts]]
     [clojure.tools.logging :as log]
     [org.httpkit.server :refer [run-server]]
@@ -27,9 +28,10 @@
   :start
   (do
     (log/info "Starting on:"
-              (-> env
-                  (update :port #(or (-> env :options :port) %))
-                  (:port)))
+              (str (get-host-address) ":"
+                   (-> env
+                       (update :port #(or (-> env :options :port) %))
+                       (:port))))
     (run-server (handler/app)
                 (-> env
                     (update :port #(or (-> env :options :port) %))

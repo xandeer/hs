@@ -43,7 +43,8 @@
          (let [tmp (:path (bean (get-in req [:params "file" :tempfile])))
                path (-> req (:uri) (cstr/replace-first "/folder" ""))]
            (log/info "Upload file save to" path)
-           (utils/save-file tmp path)))
+           (utils/save-file tmp path)
+           {:status 200, :body "ok"}))
    (route/resources "")
    (route/not-found "<h4>Not Found</h4>")))
 

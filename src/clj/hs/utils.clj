@@ -2,7 +2,9 @@
   (:require
    [hs.config :refer [env]]
    [clojure.java.io :as io]
-   [clojure.string :as cstr]))
+   [clojure.string :as cstr])
+  (:import
+   [java.net NetworkInterface]))
 
 (defn expand-file [s]
   "Replace the first `~` to `(System/getProperty \"user.home\")`"
@@ -50,6 +52,16 @@
               :name "../"}] children))))
 
 (defn save-file [tmp path]
-  (do
-    (io/copy (io/file tmp) (io/file (expand-with-root path)))
-    {:status 200, :body "ok"}))
+  (io/copy (io/file tmp) (io/file (expand-with-root path))))
+
+(defn get-host-address []
+  (-> (->> (NetworkInterface/getNetworkInterfaces)
+           enumeration-seq
+           (map bean)
+           (mapcat :interfaceAddresses)
+           (map bean)
+           (filter :broadcast)
+           (filter #(= (.getClass (:address %)) java.net.Inet4Address)))
+      (nth 0)
+      (get :address)
+      .getHostAddress))
