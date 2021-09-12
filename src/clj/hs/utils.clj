@@ -16,11 +16,18 @@
 (def home "/")
 (def static "/static")
 
-(defn root []
-  (or (-> env :options :dir) (:dir env)))
+;; (defn root []
+  ;; (or (-> env :options :dir) (:dir env)))
+
+(def root (atom nil))
+
+(defn change-root [path]
+  (swap! root #(str %2) path))
 
 (defn expand-root []
-  (expand-file (root)))
+  (expand-file (or @root
+                   (-> env :options :dir)
+                   (:dir env))))
 
 (defn expand-with-root [child]
   (str (expand-root) child))

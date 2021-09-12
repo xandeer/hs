@@ -45,6 +45,11 @@
            (log/info "Upload file save to" path)
            (utils/save-file tmp path)
            {:status 200, :body "ok"}))
+   (PUT "*" req
+        (let [uri (:uri req)]
+          (log/info "Change root path to :" uri)
+          (utils/change-root uri)
+          {:status 200, :body "ok"}))
    (route/resources "")
    (route/not-found "<h4>Not Found</h4>")))
 
