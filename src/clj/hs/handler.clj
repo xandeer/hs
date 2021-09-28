@@ -30,7 +30,9 @@
      [:script {:type "text/javascript" :src "/js/upload.js"}]]]))
 
 (mount/defstate app-routes
-  :start
+  :start (routes (route/not-found "<h4>Not Found </h4>")))
+
+(defn hs-routes []
   (routes
    (route/files "/file/" {:root (utils/expand-root)})
    (GET "/folder/*" req
@@ -49,9 +51,12 @@
         (let [uri (:uri req)]
           (log/info "Change root path to :" uri)
           (utils/change-root uri)
+          (mount/start-with-states {#'app-routes {:start #(hs-routes)}})
           {:status 200, :body "ok"}))
    (route/resources "")
    (route/not-found "<h4>Not Found</h4>")))
+
+(mount/swap-states {#'app-routes {:start #(hs-routes)}})
 
 (defn app []
   (log/info "Root:" (utils/expand-root))
