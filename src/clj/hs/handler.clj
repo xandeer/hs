@@ -1,15 +1,16 @@
 (ns hs.handler
   (:require
-    [hs.env :refer [defaults]]
-    [hs.utils :as utils]
-    [clojure.string :as cstr]
-    [compojure.core :refer :all]
-    [compojure.route :as route]
-    [clojure.tools.logging :as log]
-    [ring.middleware.params :refer [wrap-params]]
-    [ring.middleware.multipart-params :refer [wrap-multipart-params]]
-    [mount.core :as mount]
-    [hiccup.core :as hiccup]))
+   [hs.clipboard :as clipboard]
+   [hs.env :refer [defaults]]
+   [hs.utils :as utils]
+   [clojure.string :as cstr]
+   [compojure.core :refer :all]
+   [compojure.route :as route]
+   [clojure.tools.logging :as log]
+   [ring.middleware.params :refer [wrap-params]]
+   [ring.middleware.multipart-params :refer [wrap-multipart-params]]
+   [mount.core :as mount]
+   [hiccup.core :as hiccup]))
 
 (defn ll [path]
   (hiccup/html
@@ -22,6 +23,7 @@
      [:h1 {:class "title"}
       (str "Dir: " path)]
      [:input#upload {:type "file"}]
+     [:p [:a {:href "/clipboard"} "Clipboard"]]
      [:ul
       (for  [i (utils/ls path)]
         [:li
@@ -47,6 +49,8 @@
            (log/info "Upload file save to" path)
            (utils/save-file tmp path)
            {:status 200, :body "ok"}))
+   (GET "/clipboard" []
+        (clipboard/html))
    (PUT "*" req
         (let [uri (:uri req)]
           (log/info "Change root path to :" uri)
