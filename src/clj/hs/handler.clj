@@ -43,12 +43,13 @@
           (log/info "Path : " path)
           (ll path)))
    (GET "/" [] (ll "/"))
-   (POST "/folder/*" req
-         (let [tmp (:path (bean (get-in req [:params "file" :tempfile])))
-               path (-> req (:uri) (cstr/replace-first "/folder" ""))]
-           (log/info "Upload file save to" path)
-           (utils/save-file tmp path)
-           {:status 200, :body "ok"}))
+   (wrap-multipart-params
+    (POST "/folder/*" req
+          (let [tmp (:path (bean (get-in req [:params "file" :tempfile])))
+                path (-> req (:uri) (cstr/replace-first "/folder" ""))]
+            (log/info "Upload file save to" path)
+            (utils/save-file tmp path)
+            (ll path))))
    (GET "/clipboard" []
         (clipboard/html))
    (PUT "*" req
@@ -65,5 +66,4 @@
 (defn app []
   (log/info "Root:" (utils/expand-root))
   (-> #'app-routes
-      (wrap-params)
-      (wrap-multipart-params)))
+      (wrap-params)))

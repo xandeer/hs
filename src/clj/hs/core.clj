@@ -35,7 +35,8 @@
                 (-> env
                     (update :port #(or (-> env :options :port) %))
                     (update :thread #(or 3 %))
-                    (select-keys [:thread :port]))))
+                    (update :max-body #(or 314572800 %)) ; 300M
+                    (select-keys [:thread :port :max-body]))))
   :stop
   (http-server :timeout 100))
 
