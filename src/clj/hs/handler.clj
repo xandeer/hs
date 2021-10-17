@@ -47,7 +47,7 @@
     (POST "/folder/*" req
           (let [tmp (:path (bean (get-in req [:params "file" :tempfile])))
                 path (-> req (:uri) (cstr/replace-first "/folder" ""))]
-            (log/info "Upload file save to" path)
+(log/info "Upload file save to" path)
             (utils/save-file tmp path)
             (ll path))))
    (GET "/clipboard" []
